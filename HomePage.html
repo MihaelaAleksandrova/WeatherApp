@@ -39,7 +39,7 @@
 
 <div class="container">
   <div class="app-title">
-    <p>Weather</p>
+    <p>Current Weather</p>
   </div>
   <div class="notification"></div>
   <div class="weather-container">
@@ -58,15 +58,29 @@
   </div>
 </div>
 
+
+
 <div class="flex-container">
   <div class="title">
     <p>DETAILS</p>
   </div>
-  <div>Feels like</div>
-  <div>Wind</div>
-  <div>Humidity</div>  
-  <div>Rain %</div>
-</div>
+  <div class="feels-like">
+    <p>Feels like<span>- °</span><span>C</span></p>
+  </div>
+  <div class="max temperature">
+    <p>maxTemp °<span>C</span></p>
+  </div>
+  <div class="min temperature">
+    <p>minTemp °<span>C</span></p>
+  </div>
+  <div class="wind">
+    <p>-</p>
+  </div>
+  <div class="humidity">
+    <p>humidity %</p>
+  </div>
+    
+  
 
 
 
@@ -81,6 +95,16 @@
     weather.temperature = {
       unit : "celsius"
     }
+    weather.tempMAX = {
+      unit: "celsius"
+    }
+    weather.tempMIN = {
+      unit: "celsius"
+    }
+    weather.tempfeel = {
+      unit: "celsius"
+    }
+
 
     const KELVIN = 273;
     //API KEY
@@ -130,6 +154,42 @@
       tempElement.innerHTML = `${weather.temperature.value}°<span>C</span>`;
       descElement.innerHTML = weather.description;
       locationElement.innerHTML = `${weather.city}, ${weather.country}`;
+    }
+
+  const feelslikeElement = document.querySelector(".feels-like p");
+  const maxtempElement = document.querySelector(".max temperature p");
+  const mintempElement = document.querySelector(".min temperature p");
+  const windElement = document.querySelector(".wind p");
+  const humidityElement = document.querySelector(".humidity p");
+  
+    // get details
+    function getDetails(latitude, longitude){
+      let api = `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${key}` ;
+      fetch(api)
+         .then(function(response){
+           let data = response.json();
+           return data;
+         })
+         .then(function(data){
+           weather.tempfeel.value = Math.floor(data.main.feels_like - KELVIN);
+           weather.tempMAX.value = Math.floor(data.main.temp_max - KELVIN);
+           weather.tempMIN.value = Math.floor(data.main.temp_min - KELVIN);
+           weather.wind = data.wind.speed
+           weather.humidity = data.main.humidity;
+           
+         })
+         .then(function(){
+           displayDetails();
+         })
+    }
+    function displayDetails(){
+
+      feellikeElement.innerHTML = `${weather.tempfeel.value}°<span>C</span>`;
+      maxtempElement.innerHTML = `${weather.tempMAX.value}°<span>C</span>`;
+      mintempElement.innerHTML = `${weather.tempMIN.value}°<span>C</span>`;
+      windElement.innerHTML = weather.wind;
+      humidityElement.innerHTML = weather.humidity;
+      
     }
 
 
